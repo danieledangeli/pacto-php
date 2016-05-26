@@ -128,17 +128,19 @@ class PactoIntegrationTest extends \PHPUnit_Framework_TestCase
 
     private function compareHeaders($expectedHeaders, $headers)
     {
+        $headers = array_map(function($h) { return strtolower($h[0]);}, $headers);
+
         foreach($expectedHeaders as $expectedKey => $expectedValue) {
             $this->assertArrayHasKey(
-                $expectedKey,
+                strtolower($expectedKey),
                 $headers,
                 sprintf('Missed key in response headers', $expectedKey, json_encode($headers))
             );
 
             $this->assertEquals(
-                $expectedValue[0],
-                $headers[$expectedKey][0],
-                sprintf('Headers content mismatch: Expected %s Got: %s', $expectedValue[0], $headers[$expectedKey][0])
+                strtolower($expectedValue[0]),
+                strtolower($headers[strtolower($expectedKey)]),
+                sprintf('Headers content mismatch: Expected %s Got: %s', $expectedValue[0], $headers[strtolower($expectedKey)])
             );
         }
     }
@@ -166,11 +168,15 @@ class PactoIntegrationTest extends \PHPUnit_Framework_TestCase
         $expectedBody = json_decode($expected->getContents(), true);
         $body = json_decode($body->getContents(), true);
 
-        foreach($expectedBody as $key => $value) {
-            $this->assertArrayHasKey(
-                $key,
-                $body,
-                sprintf('Body key mismatch Expected %s, Got Keys: %s', $key, json_encode(array_keys($body)))); //skip value compare for now
+        if($expectedBody) {
+            foreach($expectedBody as $key => $value) {
+                $this->assertArrayHasKey(
+                    $key,
+                    $body,
+                    sprintf('Body key mismatch Expected %s, Got Keys: %s', $key, json_encode(array_keys($body)))); //skip value compare for now
+            }
+        } else {
+            $this->assertEquals($expectedBody, $body);
         }
     }
 }
