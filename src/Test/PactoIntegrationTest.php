@@ -5,14 +5,20 @@ namespace Erlangb\Phpacto\Test;
 use Erlangb\Phpacto\Consumer\Pact;
 use Erlangb\Phpacto\Consumer\PactList;
 use Erlangb\Phpacto\Factory\Pacto\PactListFactory;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
 use Symfony\Component\Finder\Finder;
 
-class PactoIntegrationTest extends \PHPUnit_Framework_TestCase
+class PactoIntegrationTest
 {
     /** @var  PactList[] */
-    protected $contracts;
+    private $contracts;
+    private $providerName;
+    private $strict;
+
+    public function __construct($providerName, $strict = false)
+    {
+        $this->providerName = $providerName;
+        $this->strict = $strict;
+    }
 
     public function loadContracts($folder)
     {
@@ -26,6 +32,51 @@ class PactoIntegrationTest extends \PHPUnit_Framework_TestCase
         foreach ($finder as $file) {
             $this->contracts[] = $contractFactory->from(file_get_contents($file->getRealpath()));
         }
+    }
+
+    /**
+     * @param \Closure $makeRequest How make a ps7Request
+     * @param \Closure $loadState Setup the test state
+     * @param \Closure $down Setup up back the state
+     */
+    public function honorContracts(\Closure $makeRequest, \Closure $loadState, \Closure $down)
+    {
+       $contracts = $this->getContractsFor($this->providerName);
+
+        if(count($contracts) === 0) {
+            throw new \Exception('No contracts found');
+        }
+
+        $runner = new \PHPUnit_TextUI_TestRunner();
+        $suite = new \PHPUnit_Framework_TestSuite();
+
+       foreach($this->getAllPactsInContracts($contracts) as $pact) {
+           $t = new PactoInstanceTest(
+               "testItHonorContract",
+               $down,
+               $loadState,
+               $makeRequest,
+               $pact,
+               $this->strict
+           );
+
+           $suite->addTest($t);
+       }
+        $runner->run($suite, ['colors' =>  \PHPUnit_TextUI_ResultPrinter::COLOR_ALWAYS]);
+    }
+
+    /**
+     * @param $contracts
+     * @return Pact[]
+     */
+    private function getAllPactsInContracts($contracts)
+    {
+        $interactions = [];
+        foreach($contracts as $contract) {
+            $interactions = array_merge($contract->getInteractions(), $interactions);
+        }
+
+        return $interactions;
     }
 
     /**
@@ -90,15 +141,6 @@ class PactoIntegrationTest extends \PHPUnit_Framework_TestCase
         return $pacts;
     }
 
-    public function assertResponse(Pact $p, ResponseInterface $r, $strict = true)
-    {
-        if($strict) {
-            $this->assertStrictResponse($p->getResponse(), $r);
-        } else {
-            $this->assertSameResponse($p->getResponse(), $r);
-        }
-    }
-
     private function checkIfFolderContainsFiles($folder)
     {
         $finder = new Finder();
@@ -106,77 +148,5 @@ class PactoIntegrationTest extends \PHPUnit_Framework_TestCase
             throw new \RuntimeException(sprintf('There is any files in %s', $folder));
         }
 
-    }
-
-    private function assertStrictResponse(ResponseInterface $expectedResponse, ResponseInterface $response)
-    {
-        $this->assertSameResponse($expectedResponse, $response);
-        $this->compareBodyResponse($expectedResponse->getBody(), $response->getBody());
-    }
-
-    private function assertSameResponse(ResponseInterface $expectedResponse, ResponseInterface $response)
-    {
-        $this->compareStatusCodes($expectedResponse->getStatusCode(), $response->getStatusCode());
-        $this->compareHeaders($expectedResponse->getHeaders(), $response->getHeaders());
-        $this->compareSameBodyResponse($expectedResponse->getBody(), $response->getBody());
-    }
-
-    private function compareStatusCodes($expected, $statusCode)
-    {
-        $this->assertEquals($expected, $statusCode, "Status Code Expectation Failed");
-    }
-
-    private function compareHeaders($expectedHeaders, $headers)
-    {
-        $headers = array_map(function($h) { return strtolower($h[0]);}, $headers);
-
-        foreach($expectedHeaders as $expectedKey => $expectedValue) {
-            $this->assertArrayHasKey(
-                strtolower($expectedKey),
-                $headers,
-                sprintf('Missed key in response headers', $expectedKey, json_encode($headers))
-            );
-
-            $this->assertEquals(
-                strtolower($expectedValue[0]),
-                strtolower($headers[strtolower($expectedKey)]),
-                sprintf('Headers content mismatch: Expected %s Got: %s', $expectedValue[0], $headers[strtolower($expectedKey)])
-            );
-        }
-    }
-
-    private function compareBodyResponse(StreamInterface $expected, StreamInterface $body)
-    {
-        $expected->rewind();
-        $body->rewind();
-
-        $expectedBody = $expected->getContents();
-        $body = $body->getContents();
-
-        $this->assertEquals(
-            $expectedBody,
-            $body,
-            sprintf('Body mismatch Expected: %s, Got: %s', $expectedBody, $body)
-        );
-    }
-
-    private function compareSameBodyResponse(StreamInterface $expected, StreamInterface $body)
-    {
-        $expected->rewind();
-        $body->rewind();
-
-        $expectedBody = json_decode($expected->getContents(), true);
-        $body = json_decode($body->getContents(), true);
-
-        if($expectedBody) {
-            foreach($expectedBody as $key => $value) {
-                $this->assertArrayHasKey(
-                    $key,
-                    $body,
-                    sprintf('Body key mismatch Expected %s, Got Keys: %s', $key, json_encode(array_keys($body)))); //skip value compare for now
-            }
-        } else {
-            $this->assertEquals($expectedBody, $body);
-        }
     }
 }

@@ -10,5 +10,5 @@ interface PactoRequestFactoryInterface
      * @param $responseArray
      * @return RequestInterface
      */
-    public function from($responseArray);
+    public function from($requestArray);
 }

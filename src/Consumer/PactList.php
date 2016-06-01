@@ -74,4 +74,12 @@ class PactList
             && strtolower($p->getDescription()) == strtolower($description);
         });
     }
+
+    /**
+     * @return Pact[]
+     */
+    public function getInteractions()
+    {
+        return $this->interactions;
+    }
 }
