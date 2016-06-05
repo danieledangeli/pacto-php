@@ -8,7 +8,6 @@ use Zend\Diactoros\Stream;
 
 class PactoResponseFactory implements PactoResponseFactoryInterface
 {
-
     public function from($responseArray)
     {
         $body = isset($responseArray['body']) ? $responseArray['body'] : '';
@@ -21,11 +20,10 @@ class PactoResponseFactory implements PactoResponseFactoryInterface
             $responseArray['status']
         );
 
-        if(isset($responseArray['headers'])) {
-            foreach($responseArray['headers'] as $key => $value) {
+        if (isset($responseArray['headers'])) {
+            foreach ($responseArray['headers'] as $key => $value) {
                 $response = $response->withAddedHeader($key, $value);
             }
-
         }
 
         return $response;

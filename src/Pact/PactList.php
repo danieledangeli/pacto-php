@@ -1,6 +1,6 @@
 <?php
 
-namespace Erlangb\Phpacto\Consumer;
+namespace Erlangb\Phpacto\Pact;
 
 class PactList
 {
@@ -47,7 +47,7 @@ class PactList
      */
     public function filterPactsByDescription($description)
     {
-         return array_filter($this->all(), function(Pact $p) use($description) {
+        return array_filter($this->all(), function (Pact $p) use ($description) {
             return strtolower($p->getDescription()) == strtolower($description);
         });
     }
@@ -58,7 +58,7 @@ class PactList
      */
     public function filterPactsByProviderState($providerState)
     {
-        return array_filter($this->all(), function(Pact $p) use($providerState) {
+        return array_filter($this->all(), function (Pact $p) use ($providerState) {
             return strtolower($p->getProviderState()) == strtolower($providerState);
         });
     }
@@ -69,7 +69,7 @@ class PactList
      */
     public function filterPactsByDescrioptionAndProviderState($description, $providerState)
     {
-        return array_filter($this->all(), function(Pact $p) use($description, $providerState) {
+        return array_filter($this->all(), function (Pact $p) use ($description,$providerState) {
             return strtolower($p->getProviderState()) == strtolower($providerState)
             && strtolower($p->getDescription()) == strtolower($description);
         });

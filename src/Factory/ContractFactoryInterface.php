@@ -2,7 +2,7 @@
 
 namespace Erlangb\Phpacto\Factory;
 
-use Erlangb\Phpacto\Consumer\Pact;
+use Erlangb\Phpacto\Pact\Pact;
 
 interface ContractFactoryInterface
 {

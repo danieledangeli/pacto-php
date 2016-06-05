@@ -2,11 +2,11 @@
 
 namespace Erlangb\Phpacto\Factory\Pacto;
 
-use Erlangb\Phpacto\Consumer\Pact;
-use Erlangb\Phpacto\Consumer\PactList;
 use Erlangb\Phpacto\Factory\ContractFactoryInterface;
 use Erlangb\Phpacto\Factory\PactoRequestFactoryInterface;
 use Erlangb\Phpacto\Factory\PactoResponseFactoryInterface;
+use Erlangb\Phpacto\Pact\Pact;
+use Erlangb\Phpacto\Pact\PactList;
 
 class PactListFactory implements ContractFactoryInterface
 {
@@ -29,7 +29,7 @@ class PactListFactory implements ContractFactoryInterface
 
         $pactList = new PactList($provider, $consumer);
 
-        foreach($jsonDescription['interactions'] as $interaction) {
+        foreach ($jsonDescription['interactions'] as $interaction) {
             $pact = new Pact(
                 $this->pactoRequestFactory->from($interaction['request']),
                 $this->pactoResponseFactory->from($interaction['response']),

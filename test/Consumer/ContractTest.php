@@ -2,6 +2,7 @@
 
 namespace Erlangb\Phpacto\Consumer;
 
+use Erlangb\Phpacto\Pact\Pact;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
 

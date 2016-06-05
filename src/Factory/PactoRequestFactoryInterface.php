@@ -7,7 +7,7 @@ use Psr\Http\Message\RequestInterface;
 interface PactoRequestFactoryInterface
 {
     /**
-     * @param $responseArray
+     * @param $requestArray
      * @return RequestInterface
      */
     public function from($requestArray);

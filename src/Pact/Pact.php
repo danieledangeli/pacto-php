@@ -1,6 +1,6 @@
 <?php
 
-namespace Erlangb\Phpacto\Consumer;
+namespace Erlangb\Phpacto\Pact;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;

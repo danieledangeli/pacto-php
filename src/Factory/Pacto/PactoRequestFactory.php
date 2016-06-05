@@ -8,7 +8,6 @@ use Zend\Diactoros\Stream;
 
 class PactoRequestFactory implements PactoRequestFactoryInterface
 {
-
     public function from($requestArray)
     {
         $str = new Stream('php://memory');

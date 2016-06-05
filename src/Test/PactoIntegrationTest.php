@@ -2,9 +2,9 @@
 
 namespace Erlangb\Phpacto\Test;
 
-use Erlangb\Phpacto\Consumer\Pact;
-use Erlangb\Phpacto\Consumer\PactList;
 use Erlangb\Phpacto\Factory\Pacto\PactListFactory;
+use Erlangb\Phpacto\Pact\Pact;
+use Erlangb\Phpacto\Pact\PactList;
 use Symfony\Component\Finder\Finder;
 
 class PactoIntegrationTest
@@ -41,17 +41,17 @@ class PactoIntegrationTest
      */
     public function honorContracts(\Closure $makeRequest, \Closure $loadState, \Closure $down)
     {
-       $contracts = $this->getContractsFor($this->providerName);
+        $contracts = $this->getContractsFor($this->providerName);
 
-        if(count($contracts) === 0) {
+        if (count($contracts) === 0) {
             throw new \Exception('No contracts found');
         }
 
         $runner = new \PHPUnit_TextUI_TestRunner();
         $suite = new \PHPUnit_Framework_TestSuite();
 
-       foreach($this->getAllPactsInContracts($contracts) as $pact) {
-           $t = new PactoInstanceTest(
+        foreach ($this->getAllPactsInContracts($contracts) as $pact) {
+            $t = new PactoInstanceTest(
                "testItHonorContract",
                $down,
                $loadState,
@@ -60,8 +60,9 @@ class PactoIntegrationTest
                $this->strict
            );
 
-           $suite->addTest($t);
-       }
+            $suite->addTest($t);
+        }
+
         $runner->run($suite, ['colors' =>  \PHPUnit_TextUI_ResultPrinter::COLOR_ALWAYS]);
     }
 
@@ -72,7 +73,7 @@ class PactoIntegrationTest
     private function getAllPactsInContracts($contracts)
     {
         $interactions = [];
-        foreach($contracts as $contract) {
+        foreach ($contracts as $contract) {
             $interactions = array_merge($contract->getInteractions(), $interactions);
         }
 
@@ -87,8 +88,8 @@ class PactoIntegrationTest
     {
         $contracts = [];
 
-        foreach($this->contracts as $pactList) {
-            if($pactList->matchProvider($providerName)) {
+        foreach ($this->contracts as $pactList) {
+            if ($pactList->matchProvider($providerName)) {
                 $contracts[] = $pactList;
             }
         }
@@ -104,7 +105,7 @@ class PactoIntegrationTest
         $contracts = $this->getContractsFor($providerName);
         $pacts = [];
 
-        foreach($contracts as $contract) {
+        foreach ($contracts as $contract) {
             $pacts = array_merge($pacts, $contract->filterPactsByDescription($description));
         }
 
@@ -119,7 +120,7 @@ class PactoIntegrationTest
         $contracts = $this->getContractsFor($providerName);
         $pacts = [];
 
-        foreach($contracts as $contract) {
+        foreach ($contracts as $contract) {
             $pacts = array_merge($pacts, $contract->filterPactsByProviderState($providerState));
         }
 
@@ -134,7 +135,7 @@ class PactoIntegrationTest
         $contracts = $this->getContractsFor($providerName);
         $pacts = [];
 
-        foreach($contracts as $contract) {
+        foreach ($contracts as $contract) {
             $pacts = array_merge($pacts, $contract->filterPactsByDescrioptionAndProviderState($description, $providerState));
         }
 
@@ -144,9 +145,8 @@ class PactoIntegrationTest
     private function checkIfFolderContainsFiles($folder)
     {
         $finder = new Finder();
-        if($finder->files()->in($folder)->count() === 0) {
+        if ($finder->files()->in($folder)->count() === 0) {
             throw new \RuntimeException(sprintf('There is any files in %s', $folder));
         }
-
     }
 }
