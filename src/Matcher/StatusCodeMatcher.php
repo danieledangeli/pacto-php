@@ -26,9 +26,7 @@ class StatusCodeMatcher
                 new Mismatch(
                     self::LOCATION,
                     MismatchType::UNEQUAL,
-                    [$expected->getStatusCode(), $actual->getStatusCode()],
-                    $expected->getStatusCode(),
-                    $actual->getStatusCode()
+                    [$expected->getStatusCode(), $actual->getStatusCode()]
                 )
             );
         }

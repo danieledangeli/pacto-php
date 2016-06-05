@@ -43,9 +43,7 @@ class HeadersMatcher
                 new Mismatch(
                     self::LOCATION,
                     MismatchType::KEY_NOT_FOUND,
-                    [$key],
-                    $expectedHeaders,
-                    $actualHeaders
+                    [$key]
                 )
             );
         }
@@ -68,9 +66,7 @@ class HeadersMatcher
                         new Mismatch(
                             self::LOCATION,
                             MismatchType::UNEQUAL,
-                            [implode(',', $expectedValues), implode(',', $actualValues)],
-                            $expectedHeaders,
-                            $actualHeaders
+                            [implode(',', $expectedValues), implode(',', $actualValues)]
                         )
                     );
                 }

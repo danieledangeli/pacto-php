@@ -33,9 +33,7 @@ class BodyMatcher
             $diff->add(
                 new Mismatch(
                     self::LOCATION,
-                    MismatchType::NIL_VS_NOT_NULL,
-                    $expectedBody,
-                    $body
+                    MismatchType::NIL_VS_NOT_NULL
                 )
             );
         }
@@ -51,9 +49,7 @@ class BodyMatcher
                     new Mismatch(
                         self::LOCATION,
                         MismatchType::KEY_NOT_FOUND,
-                        [$key],
-                        $expectedBody,
-                        $actualBody
+                        [$key]
                     )
                 );
             }
